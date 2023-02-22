@@ -9,6 +9,7 @@ import interaction from "@fullcalendar/interaction";
 //import { formatRange } from "@fullcalendar/core";
 import { Container } from "@mui/material";
 import PopRutina from "./PopRutina";
+import NewRutina from "./NewRutina";
 
 //import moment from "moment";
 
@@ -18,6 +19,8 @@ const Calendarh = () => {
   const [rutinasList, setRutinasList] = useState([]);
   const [rutina, setRutina] = useState({});
   const [openEvent, setOpenEvent] = useState(false);
+  const [openNewRutina, setOpenNewRutina] = useState(false);
+  const [dateNewRutina, setDateNewRutina] = useState(new Date());
 
   useEffect(() => {
     getMeassures();
@@ -43,7 +46,7 @@ const Calendarh = () => {
   );
 
   const handleEventClick = (id) => {
-    const rutina = rutinasList.filter((e) => e._id === id);
+    const rutina = rutinasList.filter((e) => e._id === id).pop();
     setRutina(rutina);
     setOpenEvent(true);
   };
@@ -52,6 +55,14 @@ const Calendarh = () => {
     setOpenEvent(false);
   };
 
+  const handleDateClick = (date) => {
+    setDateNewRutina(date);
+    setOpenNewRutina(true);
+  };
+
+  const handleNewRutinaClose = () => {
+    setOpenNewRutina(false);
+  };
   return (
     <Container>
       <FullCalendar
@@ -63,13 +74,20 @@ const Calendarh = () => {
         }}
         height={"85vh"}
         initialView='dayGridMonth'
+        editable='true'
         events={events}
         eventClick={(info) => handleEventClick(info.event.id)}
+        dateClick={(info) => handleDateClick(info.dateStr)}
       />
       <PopRutina
         handleEventClose={handleEventClose}
         openEvent={openEvent}
         rutina={rutina}
+      />
+      <NewRutina
+        handleNewRutinaClose={handleNewRutinaClose}
+        openNewRutina={openNewRutina}
+        dateNewRutina={dateNewRutina}
       />
     </Container>
   );
