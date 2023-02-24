@@ -1,4 +1,5 @@
 import React from "react";
+
 import { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 //import { Calendar } from "@fullcalendar/core";
@@ -14,6 +15,8 @@ import NewRutina from "./NewRutina";
 //import moment from "moment";
 
 //const localizer = momentLocalizer(moment); // or globalizeLocalizer
+
+const rutineUrl = "http://localhost:3000/Rutinas?id=";
 
 const Calendarh = () => {
   const [rutinasList, setRutinasList] = useState([]);
@@ -41,7 +44,7 @@ const Calendarh = () => {
       title: ob.name,
       start: ob.day,
       allDay: true,
-      editable: true,
+      editable: false,
     })
   );
 
@@ -53,6 +56,7 @@ const Calendarh = () => {
 
   const handleEventClose = () => {
     setOpenEvent(false);
+    setRutina({});
   };
 
   const handleDateClick = (date) => {
@@ -63,6 +67,22 @@ const Calendarh = () => {
   const handleNewRutinaClose = () => {
     setOpenNewRutina(false);
   };
+
+  async function putDropEvent(id, date) {
+    return await fetch(`${rutineUrl}${id}`, {
+      method: "PUT",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ day: date }),
+    })
+      .then((res) => (res = res.json()))
+      .then(getMeassures())
+
+      .catch((error) => console.log("Error:", error));
+  }
+
   return (
     <Container>
       <FullCalendar
@@ -74,10 +94,11 @@ const Calendarh = () => {
         }}
         height={"85vh"}
         initialView='dayGridMonth'
-        editable='true'
+        editable='false'
         events={events}
         eventClick={(info) => handleEventClick(info.event.id)}
         dateClick={(info) => handleDateClick(info.dateStr)}
+        eventDrop={(info) => putDropEvent(info.event.id, info.event.start)}
       />
       <PopRutina
         handleEventClose={handleEventClose}
